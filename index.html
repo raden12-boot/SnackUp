@@ -39,7 +39,7 @@
       padding: 0 12px;
     }
 
-    /* HEADER - hanya logo dan search bar */
+    /* HEADER */
     .header {
       background: var(--white);
       padding: 12px 0;
@@ -167,7 +167,7 @@
       border-color: var(--yellow);
     }
 
-    /* PRODUK GRID - SELALU 2 KOLOM */
+    /* PRODUK GRID - 2 KOLOM */
     .produk-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -188,9 +188,10 @@
       transform: translateY(-4px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
+    /* PERUBAHAN UTAMA: aspect-ratio portrait 3/4 */
     .produk-card img {
       width: 100%;
-      height: 150px;
+      aspect-ratio: 3 / 4;
       object-fit: cover;
       display: block;
     }
@@ -230,7 +231,6 @@
       margin-bottom: 8px;
     }
 
-    /* Dropdown varian */
     .variant-select {
       width: 100%;
       padding: 6px 8px;
@@ -308,7 +308,6 @@
       padding-top: 12px;
     }
 
-    /* Responsif: tetap 2 kolom, hanya perbesar padding sedikit */
     @media (max-width: 480px) {
       .header .container {
         flex-direction: column;
@@ -321,9 +320,7 @@
       .produk-grid {
         gap: 10px;
       }
-      .produk-card img {
-        height: 130px;
-      }
+      /* gambar tetap portrait, tidak perlu ubah */
       .card-body h4 {
         font-size: 13px;
       }
@@ -341,7 +338,6 @@
   <header class="header">
     <div class="container">
       <a href="#" class="logo">
-        <!-- Ganti dengan URL logo toko (bisa PNG/SVG) -->
         <img src="https://via.placeholder.com/120x32/FFB300/ffffff?text=MYSHOP" alt="Logo Toko">
       </a>
       <div class="search-bar">
@@ -352,7 +348,7 @@
   </header>
 
   <main class="container">
-    <!-- SWIPER SLIDER -->
+    <!-- SWIPER -->
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
         <div class="swiper-slide">
@@ -370,7 +366,7 @@
       <div class="swiper-button-prev"></div>
     </div>
 
-    <!-- KATEGORI (tanpa emoticon) -->
+    <!-- KATEGORI -->
     <div class="kategori-section">
       <h3 class="section-title">Kategori</h3>
       <div class="kategori-scroll" id="kategoriScroll">
@@ -381,7 +377,7 @@
       </div>
     </div>
 
-    <!-- PRODUK 2 KOLOM -->
+    <!-- PRODUK -->
     <h3 class="section-title" id="produkLabel">Semua Produk</h3>
     <div class="produk-grid" id="produkContainer"></div>
   </main>
@@ -411,9 +407,8 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // Data produk (ganti sesuai stokmu), tambahkan 'variants' untuk produk yang punya varian rasa
     const products = [
-      { name: "Kimbab Snack", category: "Snack", price: 8000, image: "/KimbabCake.jpeg", rating: 4.8, sold: 120 },
+      { name: "Kimbab Cake", category: "Snack", price: 18000, image: "/KimbabCake.jpeg", rating: 4.8, sold: 120 },
       { name: "Mie Ayam Bakso", category: "makanan", price: 15000, image: "https://images.unsplash.com/photo-1552611052-33e04de1b1b4?w=400&h=300&fit=crop", rating: 4.7, sold: 95 },
       { name: "Sate Ayam Madura", category: "makanan", price: 22000, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop", rating: 4.9, sold: 200 },
       { name: "Es Teh Manis Segar", category: "minuman", price: 6000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop", rating: 4.5, sold: 85, variants: ["Original", "Lemon", "Leci"] },
@@ -427,7 +422,6 @@
 
     let currentKat = 'all';
 
-    // Fungsi untuk render produk
     function renderProducts(filter = 'all', searchText = '') {
       const container = document.getElementById('produkContainer');
       let filtered = products;
@@ -445,7 +439,6 @@
       }
 
       container.innerHTML = filtered.map(p => {
-        // Apakah punya varian?
         const hasVariant = p.variants && p.variants.length > 0;
         const variantOptions = hasVariant
           ? p.variants.map(v => `<option value="${v}">${v}</option>`).join('')
@@ -469,11 +462,8 @@
       }).join('');
     }
 
-    // Fungsi beli via WA dengan varian
     function beliProduk(buttonElement, namaProduk) {
-      // Cari parent card
       const card = buttonElement.closest('.produk-card');
-      // Cari select varian jika ada
       const selectVariant = card.querySelector('.variant-select');
       const variantText = selectVariant ? selectVariant.value : '';
 
@@ -487,13 +477,11 @@
       window.open(url, '_blank');
     }
 
-    // Pencarian
     function filterProduk() {
       const searchVal = document.getElementById('searchInput').value.trim();
       renderProducts(currentKat, searchVal);
     }
 
-    // Swiper
     new Swiper(".mySwiper", {
       loop: true,
       autoplay: { delay: 3500 },
@@ -501,7 +489,6 @@
       navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
     });
 
-    // Kategori
     document.querySelectorAll('.kat-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.kat-btn').forEach(b => b.classList.remove('active'));
@@ -512,10 +499,7 @@
       });
     });
 
-    // Search real-time
     document.getElementById('searchInput').addEventListener('input', filterProduk);
-
-    // Tampilkan semua produk saat halaman dimuat
     renderProducts();
   </script>
 </body>
