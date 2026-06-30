@@ -68,7 +68,7 @@
       overflow: hidden;
       transition: 0.2s;
       max-width: 500px;
-      margin-left: auto; /* dorong ke kanan jika mau, bisa juga rata kiri */
+      margin-left: auto;
     }
     .search-bar:focus-within {
       border-color: var(--yellow);
@@ -229,6 +229,20 @@
       color: #888;
       margin-bottom: 8px;
     }
+
+    /* Dropdown varian */
+    .variant-select {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      background: white;
+      outline: none;
+    }
+
     .btn-beli {
       background: var(--yellow);
       color: #212529;
@@ -397,22 +411,23 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // Data produk (ganti sesuai stokmu)
+    // Data produk (ganti sesuai stokmu), tambahkan 'variants' untuk produk yang punya varian rasa
     const products = [
       { name: "Nasi Goreng Spesial", category: "makanan", price: 18000, image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=300&fit=crop", rating: 4.8, sold: 120 },
       { name: "Mie Ayam Bakso", category: "makanan", price: 15000, image: "https://images.unsplash.com/photo-1552611052-33e04de1b1b4?w=400&h=300&fit=crop", rating: 4.7, sold: 95 },
       { name: "Sate Ayam Madura", category: "makanan", price: 22000, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop", rating: 4.9, sold: 200 },
-      { name: "Es Teh Manis Segar", category: "minuman", price: 6000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop", rating: 4.5, sold: 85 },
-      { name: "Jus Alpukat Kental", category: "minuman", price: 12000, image: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=400&h=300&fit=crop", rating: 4.8, sold: 110 },
+      { name: "Es Teh Manis Segar", category: "minuman", price: 6000, image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop", rating: 4.5, sold: 85, variants: ["Original", "Lemon", "Leci"] },
+      { name: "Jus Alpukat Kental", category: "minuman", price: 12000, image: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=400&h=300&fit=crop", rating: 4.8, sold: 110, variants: ["Original", "Coklat", "Strawberry"] },
       { name: "Kopi Susu Gula Aren", category: "minuman", price: 10000, image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop", rating: 4.9, sold: 150 },
-      { name: "Keripik Singkong Balado", category: "snack", price: 8000, image: "https://images.unsplash.com/photo-1621447504864-54bfb465d265?w=400&h=300&fit=crop", rating: 4.6, sold: 60 },
-      { name: "Pisang Goreng Crispy", category: "snack", price: 10000, image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop", rating: 4.7, sold: 75 },
+      { name: "Keripik Singkong", category: "snack", price: 8000, image: "https://images.unsplash.com/photo-1621447504864-54bfb465d265?w=400&h=300&fit=crop", rating: 4.6, sold: 60, variants: ["Balado", "Keju", "Pedas Manis", "Barbeque"] },
+      { name: "Pisang Goreng Crispy", category: "snack", price: 10000, image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop", rating: 4.7, sold: 75, variants: ["Original", "Coklat Keju", "Green Tea"] },
       { name: "Tahu Walik Pedas", category: "snack", price: 9000, image: "https://images.unsplash.com/photo-1626200419199-391ae4be4d41?w=400&h=300&fit=crop", rating: 4.4, sold: 40 },
-      { name: "Burger Sapi Jumbo", category: "makanan", price: 25000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop", rating: 4.8, sold: 90 }
+      { name: "Burger Sapi Jumbo", category: "makanan", price: 25000, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop", rating: 4.8, sold: 90, variants: ["Beef Single", "Beef Double", "Beef Cheese"] }
     ];
 
     let currentKat = 'all';
 
+    // Fungsi untuk render produk
     function renderProducts(filter = 'all', searchText = '') {
       const container = document.getElementById('produkContainer');
       let filtered = products;
@@ -429,30 +444,50 @@
         return;
       }
 
-      container.innerHTML = filtered.map(p => `
-        <div class="produk-card">
-          <img src="${p.image}" alt="${p.name}" loading="lazy">
-          <div class="card-body">
-            <div>
-              <h4>${p.name}</h4>
-              <div class="kat">${p.category}</div>
-              <div class="harga">Rp ${p.price.toLocaleString('id-ID')}</div>
-              <div class="card-meta">${p.rating} | ${p.sold}+ terjual</div>
+      container.innerHTML = filtered.map(p => {
+        // Apakah punya varian?
+        const hasVariant = p.variants && p.variants.length > 0;
+        const variantOptions = hasVariant
+          ? p.variants.map(v => `<option value="${v}">${v}</option>`).join('')
+          : '';
+
+        return `
+          <div class="produk-card">
+            <img src="${p.image}" alt="${p.name}" loading="lazy">
+            <div class="card-body">
+              <div>
+                <h4>${p.name}</h4>
+                <div class="kat">${p.category}</div>
+                <div class="harga">Rp ${p.price.toLocaleString('id-ID')}</div>
+                <div class="card-meta">${p.rating} | ${p.sold}+ terjual</div>
+              </div>
+              ${hasVariant ? `<select class="variant-select">${variantOptions}</select>` : ''}
+              <button class="btn-beli" onclick="beliProduk(this, '${p.name.replace(/'/g, "\\'")}')">Beli via WA</button>
             </div>
-            <button class="btn-beli" onclick="beliProduk('${p.name.replace(/'/g, "\\'")}')">
-              Beli via WA
-            </button>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    function beliProduk(namaProduk) {
-      const pesan = `Halo ka aku mau beli #${namaProduk} doongs`;
+    // Fungsi beli via WA dengan varian
+    function beliProduk(buttonElement, namaProduk) {
+      // Cari parent card
+      const card = buttonElement.closest('.produk-card');
+      // Cari select varian jika ada
+      const selectVariant = card.querySelector('.variant-select');
+      const variantText = selectVariant ? selectVariant.value : '';
+
+      let pesan;
+      if (variantText) {
+        pesan = `Halo ka aku mau beli #${namaProduk} (Rasa: ${variantText}) doongs`;
+      } else {
+        pesan = `Halo ka aku mau beli #${namaProduk} doongs`;
+      }
       const url = `https://wa.me/6288906120188?text=${encodeURIComponent(pesan)}`;
       window.open(url, '_blank');
     }
 
+    // Pencarian
     function filterProduk() {
       const searchVal = document.getElementById('searchInput').value.trim();
       renderProducts(currentKat, searchVal);
