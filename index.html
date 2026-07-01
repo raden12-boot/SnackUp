@@ -50,16 +50,31 @@
     }
     .header .container {
       display: flex;
+      flex-direction: column;  /* susun vertikal */
+      align-items: center;     /* rata tengah */
+      gap: 12px;
+    }
+    /* Baris atas: logo + teks */
+    .header-top {
+      display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
     .logo img {
-      height: 32px;
+      height: 48px;   /* logo lebih besar */
       width: auto;
       display: block;
     }
+    .brand-text {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--yellow-dark);  /* atau #212529, sesuaikan */
+      letter-spacing: 0.5px;
+    }
+    /* Search bar di bawah */
     .search-bar {
-      flex: 1;
+      width: 100%;
+      max-width: 500px;
       display: flex;
       align-items: center;
       background: var(--gray-100);
@@ -67,8 +82,6 @@
       border-radius: 50px;
       overflow: hidden;
       transition: 0.2s;
-      max-width: 500px;
-      margin-left: auto;
     }
     .search-bar:focus-within {
       border-color: var(--yellow);
@@ -188,7 +201,6 @@
       transform: translateY(-4px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
-    /* PERUBAHAN UTAMA: aspect-ratio portrait 3/4 */
     .produk-card img {
       width: 100%;
       aspect-ratio: 3 / 4;
@@ -310,9 +322,16 @@
 
     @media (max-width: 480px) {
       .header .container {
-        flex-direction: column;
-        align-items: stretch;
         gap: 10px;
+      }
+      .header-top {
+        gap: 8px;
+      }
+      .brand-text {
+        font-size: 18px;
+      }
+      .logo img {
+        height: 38px;
       }
       .search-bar {
         max-width: 100%;
@@ -320,7 +339,6 @@
       .produk-grid {
         gap: 10px;
       }
-      /* gambar tetap portrait, tidak perlu ubah */
       .card-body h4 {
         font-size: 13px;
       }
@@ -337,9 +355,14 @@
 <body>
   <header class="header">
     <div class="container">
-      <a href="index.html" class="logo">
-        <img src="/lgoo.png" alt="Logo Toko">
-      </a>
+      <!-- Baris atas: logo + tulisan SnackUp -->
+      <div class="header-top">
+        <a href="index.html" class="logo">
+          <img src="/lgoo.png" alt="Logo Toko">
+        </a>
+        <span class="brand-text">SnackUp</span>
+      </div>
+      <!-- Search bar di bawah -->
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Cari makanan, minuman...">
         <button onclick="filterProduk()">Cari</button>
@@ -348,7 +371,7 @@
   </header>
 
   <main class="container">
-    <!-- SWIPER -->
+    <!-- SWIPER (dikomentari sesuai permintaan) -->
     <!-- <div class="swiper mySwiper">
       <div class="swiper-wrapper">
         <div class="swiper-slide">
@@ -399,18 +422,18 @@
         </div>
       </div>
       <div class="copyright">
-        &copy; 2025 MyShop. Gambar hanya ilustrasi.
+        &copy; 2025 SnackUp. Gambar hanya ilustrasi.
       </div>
     </div>
   </footer>
 
-  <!-- Swiper JS -->
+  <!-- Swiper JS (tetap di-load meski swiper dikomentari) -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const products = [
       { name: "Kimbab Cake", category: "snack", price: 8000, image: "/KimbabCake.jpeg", rating: 4.8, sold: 25 },
       { name: "Jahe Kunyit Asam Manis", category: "minuman", price: 18000, image: "/JaheManis.png", rating: 4.7, sold: 50 },
-      { name: "Kimbab Original", category: "snack", price: 12000, image: "/KimbabORI.png", rating: 4.5, sold: 85, variants: ["Original", "Uramaki",] },
+      { name: "Kimbab Original", category: "snack", price: 12000, image: "/KimbabORI.png", rating: 4.5, sold: 85, variants: ["Original", "Uramaki"] },
       { name: "Sandwich", category: "snack", price: 8000, image: "/sandwich.png", rating: 4.5, sold: 26},
       { name: "Onigiri", category: "snack", price: 6000, image: "/onigiri.png", rating: 4.8, sold: 24, variants: ["Ayam Pedas", "Ayam Barbeque", "Ayam Teriyaki"] },
     ];
@@ -477,12 +500,15 @@
       renderProducts(currentKat, searchVal);
     }
 
-    new Swiper(".mySwiper", {
-      loop: true,
-      autoplay: { delay: 3500 },
-      pagination: { el: ".swiper-pagination", clickable: true },
-      navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-    });
+    // Swiper tetap diinisialisasi walau elemen dikomentari (tidak error karena elemen tidak ada)
+    if (document.querySelector('.mySwiper')) {
+      new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: { delay: 3500 },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+      });
+    }
 
     document.querySelectorAll('.kat-btn').forEach(btn => {
       btn.addEventListener('click', function() {
